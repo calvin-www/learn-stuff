@@ -126,3 +126,27 @@ test("pending elicitation reveals no grading key or explanation", () => {
   assert.match(wire, /Three/);
   assert.match(wire, /Four/);
 });
+
+test("clients without elicitation receive a no-popup conversation prompt", () => {
+  const result = knowledgeCheck(question, undefined, false);
+  const wire = JSON.stringify(result);
+  assert.match(wire, /needsConversationAnswer/);
+  assert.match(wire, /2 \+ 2/);
+  assert.doesNotMatch(wire, /Two plus two is four|correctAnswer|correctValues/);
+});
+
+test("a conversational answer is graded by the same tool", () => {
+  const result = knowledgeCheck({ ...question, learnerAnswer: "4" }, undefined, false);
+  assert.ok("structuredContent" in result && result.structuredContent);
+  const grade = result.structuredContent as QuizGrade;
+  assert.equal(grade.correct, true);
+  assert.deepEqual(grade.selectedLabels, ["Four"]);
+});
+
+test("a conversational I don't know response remains distinct", () => {
+  const result = knowledgeCheck({ ...question, dontKnow: true }, undefined, false);
+  assert.ok("structuredContent" in result && result.structuredContent);
+  const grade = result.structuredContent as QuizGrade;
+  assert.equal(grade.correct, false);
+  assert.equal(grade.dontKnow, true);
+});

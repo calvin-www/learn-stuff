@@ -4,7 +4,7 @@ const endpoint = process.env.MCP_URL ?? "http://localhost:3100/mcp";
 const version = "2026-07-28";
 let requestId = 0;
 
-async function request(method, params = {}) {
+async function request(method, params = {}, clientCapabilities = { elicitation: {} }) {
   const body = {
     jsonrpc: "2.0",
     id: ++requestId,
@@ -13,7 +13,7 @@ async function request(method, params = {}) {
       ...params,
       _meta: {
         "io.modelcontextprotocol/protocolVersion": version,
-        "io.modelcontextprotocol/clientCapabilities": { elicitation: {} },
+        "io.modelcontextprotocol/clientCapabilities": clientCapabilities,
       },
     },
   };
@@ -65,4 +65,17 @@ const final = await request("tools/call", {
   },
 });
 assert.equal(final.structuredContent.correct, true);
+
+const chatPrompt = await request("tools/call", {
+  name: "knowledge_check",
+  arguments: args,
+}, {});
+assert.equal(chatPrompt.structuredContent.needsConversationAnswer, true);
+assert.ok(!JSON.stringify(chatPrompt).includes(args.explanation));
+
+const chatGrade = await request("tools/call", {
+  name: "knowledge_check",
+  arguments: { ...args, learnerAnswer: "4" },
+}, {});
+assert.equal(chatGrade.structuredContent.correct, true);
 console.log(`MCP smoke test passed: ${endpoint}`);

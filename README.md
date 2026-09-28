@@ -4,11 +4,15 @@ An adaptive teaching Skill and Vercel-hosted MCP server for ChatGPT, inspired by
 
 ## Quiz flow
 
-`knowledge_check` is the sole public quiz tool. It accepts a question, choices, the correct answer, and a concise explanation. The server validates and optionally shuffles the choices, then returns MCP `input_required` with a native form elicitation. When the client retries the same tool call with the learner's answer, the server grades it and returns `correct`, `dontKnow`, selected and correct values and labels, and the explanation. ChatGPT can continue from that final tool result.
+`knowledge_check` is the sole public quiz tool. It accepts a question, choices, the correct answer, and a concise explanation. The server validates and optionally shuffles the choices. When the client advertises elicitation support, it returns MCP `input_required` with a native form. On retry with the learner's answer, the server grades it and returns `correct`, `dontKnow`, selected and correct values and labels, and the explanation. The model can continue from that final tool result.
 
 The elicitation form contains only the question and answer choices. The answer key and explanation are sent to the tool by the model and are not included in the form. The tool handles single-select, multi-select, and a distinct **I don't know** answer. The flow does not use `ui/message`, an MCP App widget, Redis, or process-local state.
 
-Native MCP elicitation support depends on the ChatGPT client and connection protocol. MCP Apps do not currently document a custom widget for the pending elicitation, so this version uses the native form. If ChatGPT does not surface `input_required` for a connection, this version cannot complete an interactive quiz on that connection; it does not send a follow-up message on the learner's behalf. Open-ended questions about goals or preferences remain normal conversation.
+### ChatGPT compatibility
+
+In a live ChatGPT connection test on September 27, 2026, the client did not declare the `elicitation` capability. Its tool error was: `Cannot request input 'answer' (elicitation/create): the request's client capabilities do not declare the required capability`. The native form therefore did not appear, and automatic lesson continuation after answering could not be verified in ChatGPT. A custom app-rendered elicitation widget is also not documented for ChatGPT.
+
+For clients without elicitation, the tool returns `needsConversationAnswer` with only the public question and options. ChatGPT asks the learner in normal conversation, then calls the same tool with `learnerAnswer` or `dontKnow` on the next turn for server-side grading. This path needs a normal learner reply but never invokes `ui/message` or the “Send follow-up?” popup. Open-ended questions about goals or preferences remain normal conversation.
 
 ## Deploy and connect
 

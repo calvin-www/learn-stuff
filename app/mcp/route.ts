@@ -16,7 +16,7 @@ const handler = createMcpHandler((server) => {
     {
       title: "Knowledge check",
       description:
-        "Ask the learner one gradable question through native MCP elicitation, then return the server-graded result. Wait for the final tool result before continuing the lesson.",
+        "Ask one gradable question through MCP elicitation and return a server-graded result. If the client cannot elicit input, ask in normal chat and call this tool again with learnerAnswer or dontKnow.",
       inputSchema: z.object({
         question: z.string().min(1),
         details: z.string().optional(),
@@ -25,15 +25,8 @@ const handler = createMcpHandler((server) => {
         correctAnswer: z.union([z.string(), z.array(z.string()).min(1)]),
         explanation: z.string().min(1),
         shuffle: z.boolean().optional(),
-      }),
-      outputSchema: z.object({
-        correct: z.boolean(),
-        dontKnow: z.boolean(),
-        selectedValues: z.array(z.string()),
-        selectedLabels: z.array(z.string()),
-        correctValues: z.array(z.string()),
-        correctLabels: z.array(z.string()),
-        explanation: z.string(),
+        learnerAnswer: z.union([z.string(), z.array(z.string()).min(1)]).optional(),
+        dontKnow: z.boolean().optional(),
       }),
       annotations: {
         readOnlyHint: true,
@@ -47,7 +40,11 @@ const handler = createMcpHandler((server) => {
     },
     (args, ctx) => {
       try {
-        return knowledgeCheck(args, ctx.mcpReq.inputResponses);
+        const envelope = ctx.mcpReq.envelope as Record<string, unknown> | undefined;
+        const capabilities = envelope?.["io.modelcontextprotocol/clientCapabilities"];
+        const supportsElicitation =
+          typeof capabilities === "object" && capabilities !== null && "elicitation" in capabilities;
+        return knowledgeCheck(args, ctx.mcpReq.inputResponses, supportsElicitation);
       } catch (error) {
         return {
           isError: true,

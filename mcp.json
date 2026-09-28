@@ -3,7 +3,7 @@
   "mcpServers": {
     "learn": {
       "type": "streamable-http",
-      "url": "https://learn-stuff.vercel.app/mcp"
+      "url": "https://learn-stuff-nine.vercel.app/mcp"
     }
   }
 }

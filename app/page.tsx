@@ -5,7 +5,7 @@ export default function Home() {
         <div className="badge">MCP SERVER</div>
         <h1>Learn Stuff</h1>
         <p className="lede">
-          Adaptive teaching with server-graded knowledge checks through native MCP elicitation.
+          Adaptive teaching with server-graded knowledge checks through MCP elicitation or normal chat.
         </p>
 
         <div className="statusGrid">
@@ -15,7 +15,7 @@ export default function Home() {
           </div>
           <div>
             <span className="label">Quiz interaction</span>
-            <strong>Native elicitation</strong>
+            <strong>Elicitation with chat fallback</strong>
           </div>
         </div>
 

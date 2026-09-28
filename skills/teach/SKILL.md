@@ -78,7 +78,9 @@ Every quiz must test understanding rather than test-taking tricks.
 - Use stable semantic `value` fields and reference those values in `correctAnswer`.
 - Set `shuffle: false` only when answer order itself matters.
 
-For each gradable check, call `knowledge_check` with the question, options, correct answer, and a concise post-answer explanation. The tool asks for the learner's answer through MCP elicitation and returns a graded result. **Wait for that final result**, then continue teaching in the same conversation flow. Do not reveal the answer or explanation before the learner responds. Do not call `ui/message` to continue a lesson.
+For each gradable check, call `knowledge_check` with the question, options, correct answer, and a concise post-answer explanation. When the client supports MCP elicitation, the tool asks for the learner's answer and returns a graded result. **Wait for that final result**, then continue teaching in the same conversation flow.
+
+If the result says `needsConversationAnswer: true`, the client cannot show elicitation. Ask the returned question and choices in normal conversation, then wait for the learner's reply. Call `knowledge_check` again with the same quiz arguments and `learnerAnswer` set to the chosen option value or values. If the learner says they do not know, use `dontKnow: true` instead. Wait for the server-graded result before teaching further. Do not reveal the answer or explanation before the learner responds. Do not call `ui/message` to continue a lesson.
 
 ## Interpreting quiz results
 
