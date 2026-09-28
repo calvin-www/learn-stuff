@@ -10,9 +10,9 @@ The elicitation form contains only the question and answer choices. The answer k
 
 ### ChatGPT compatibility
 
-In a live ChatGPT connection test on September 27, 2026, the client did not declare the `elicitation` capability. Its tool error was: `Cannot request input 'answer' (elicitation/create): the request's client capabilities do not declare the required capability`. The native form therefore did not appear, and automatic lesson continuation after answering could not be verified in ChatGPT. A custom app-rendered elicitation widget is also not documented for ChatGPT.
+In a live ChatGPT connection test on September 27, 2026, the client did not declare the `elicitation` capability. Before the fallback was added, its tool error was: `Cannot request input 'answer' (elicitation/create): the request's client capabilities do not declare the required capability`. The native form therefore did not appear, so same-call lesson continuation is unavailable in this ChatGPT client. A custom app-rendered elicitation widget is also not documented for ChatGPT.
 
-For clients without elicitation, the tool returns `needsConversationAnswer` with only the public question and options. ChatGPT asks the learner in normal conversation, then calls the same tool with `learnerAnswer` or `dontKnow` on the next turn for server-side grading. This path needs a normal learner reply but never invokes `ui/message` or the “Send follow-up?” popup. Open-ended questions about goals or preferences remain normal conversation.
+For clients without elicitation, the tool returns `needsConversationAnswer` with only the public question and options. ChatGPT asks the learner in normal conversation, then calls the same tool with `learnerAnswer` or `dontKnow` on the next turn for server-side grading. This path needs a normal learner reply but never invokes `ui/message` or the “Send follow-up?” popup. In a live ChatGPT test, the learner replied `4`, the tool graded it, and ChatGPT continued teaching. Open-ended questions about goals or preferences remain normal conversation.
 
 ## Deploy and connect
 
