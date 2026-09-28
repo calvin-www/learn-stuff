@@ -1,0 +1,13 @@
+{
+  "$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
+  "name": "chatgpt-learn",
+  "version": "0.3.0",
+  "description": "Adaptive teaching that probes prior knowledge, builds concepts from foundations, and checks understanding with native MCP elicitation.",
+  "keywords": [
+    "learning",
+    "teaching",
+    "quiz",
+    "tutoring",
+    "education"
+  ]
+}
